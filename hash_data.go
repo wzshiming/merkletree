@@ -15,6 +15,12 @@ func NewHash(data []byte, h hash.Hash) HashData {
 }
 
 func SumHash(hashs []HashData, h hash.Hash) HashData {
+	switch len(hashs) {
+	case 0:
+		return nil
+	case 1:
+		return hashs[0]
+	}
 	h.Reset()
 	for _, v := range hashs {
 		h.Write(v[:])
@@ -23,9 +29,23 @@ func SumHash(hashs []HashData, h hash.Hash) HashData {
 }
 
 func (h HashData) String() string {
-	return hex.EncodeToString(h[:])
+	return "0x" + hex.EncodeToString(h[:])
 }
 
 func (h HashData) MarshalJSON() ([]byte, error) {
-	return json.Marshal(h.String())
+	return json.Marshal(hex.EncodeToString(h[:]))
+}
+
+func (h *HashData) UnmarshalJSON(data []byte) error {
+	s := ""
+	err := json.Unmarshal(data, &s)
+	if err != nil {
+		return err
+	}
+	d, err := hex.DecodeString(s)
+	if err != nil {
+		return err
+	}
+	*h = HashData(d)
+	return nil
 }

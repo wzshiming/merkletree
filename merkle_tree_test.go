@@ -15,17 +15,9 @@ func TestB(t *testing.T) {
 	mt := NewMerkleTree(3, hash)
 
 	for i := 0; i != 10; i++ {
-		err := mt.Append(NewHash([]byte(fmt.Sprintln("hello", i)), hash))
-		if err != nil {
-			ffmt.Mark(err)
-			return
-		}
+		mt.Write([]byte(fmt.Sprintln("hello", i)))
+	}
 
-	}
-	err := mt.Done()
-	if err != nil {
-		ffmt.Mark(err)
-		return
-	}
-	ffmt.Puts(mt.tree)
+	ffmt.Mark(mt.SumHash())
+
 }
